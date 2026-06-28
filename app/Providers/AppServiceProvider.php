@@ -22,6 +22,7 @@ use App\Repositories\Eloquent\HospitalRepository;
 use App\Repositories\Eloquent\SpecialtyRepository;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Paginator::useBootstrapFive();
 
         Gate::policy(Hospital::class, HospitalPolicy::class);
