@@ -1,0 +1,432 @@
+/* موعدي — Dashboard Responsive Styles (Mobile First) */
+
+:root {
+    --primary: #3DA8C4;
+    --primary-dark: #2D8FAE;
+    --success: #3E9B52;
+    --success-dark: #237640;
+    --warning: #F59E0B;
+    --warning-dark: #D97706;
+    --bg-light: #F8FBFC;
+    --sidebar-width: 16.25rem;
+    --touch-min: 2.75rem;
+    --content-padding: 1rem;
+    --radius: 0.75rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg-light);
+    overflow-x: hidden;
+    max-width: 100vw;
+    min-height: 100vh;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+/* ——— Touch-friendly controls ——— */
+.btn,
+.form-control,
+.form-select {
+    min-height: var(--touch-min);
+}
+
+.btn-sm {
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.form-control-sm,
+.form-select-sm {
+    min-height: 2.25rem;
+}
+
+/* ——— Theme buttons ——— */
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-success {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background: var(--success-dark);
+    border-color: var(--success-dark);
+}
+
+.btn-warning {
+    background: var(--warning);
+    border-color: var(--warning);
+    color: #fff;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+    background: var(--warning-dark);
+    border-color: var(--warning-dark);
+    color: #fff;
+}
+
+/* ——— Cards & stats ——— */
+.card {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.06);
+}
+
+.stat-card {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.06);
+    height: 100%;
+}
+
+.stat-card .icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.badge-active { background: var(--success); }
+.badge-inactive { background: #6c757d; }
+
+/* ——— Sidebar (desktop) ——— */
+.app-sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1040;
+    display: none;
+    flex-direction: column;
+}
+
+.app-sidebar .brand {
+    padding: 1rem 1.25rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.app-sidebar .hospital-name {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    font-weight: 400;
+    margin-top: 0.25rem;
+    word-break: break-word;
+}
+
+.app-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.88);
+    padding: 0.75rem 1.25rem;
+    min-height: var(--touch-min);
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.app-sidebar .nav-link:hover,
+.app-sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.app-sidebar .nav-link i {
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.app-sidebar--admin {
+    background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+}
+
+.app-sidebar--hospital {
+    background: linear-gradient(180deg, var(--success-dark) 0%, var(--success) 100%);
+}
+
+/* ——— Offcanvas (mobile sidebar) ——— */
+.offcanvas-sidebar .offcanvas-header {
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.offcanvas-sidebar--admin {
+    background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+}
+
+.offcanvas-sidebar--hospital {
+    background: linear-gradient(180deg, var(--success-dark) 0%, var(--success) 100%);
+}
+
+.offcanvas-sidebar .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ——— Main layout ——— */
+.main-content {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+}
+
+.topbar {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem var(--content-padding);
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.topbar-title {
+    font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+    font-weight: 600;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.topbar-user {
+    font-size: 0.875rem;
+    max-width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.content-area {
+    padding: var(--content-padding);
+    max-width: 100%;
+}
+
+/* ——— Page toolbar ——— */
+.page-toolbar {
+    gap: 0.75rem;
+}
+
+.page-toolbar-title {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-weight: 600;
+}
+
+/* ——— Tables ——— */
+.table th {
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.table-scroll {
+    min-width: 36rem;
+}
+
+.table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.table-actions .btn {
+    min-height: 2.25rem;
+}
+
+/* ——— Images ——— */
+.img-thumb {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: cover;
+    border-radius: 0.375rem;
+}
+
+.img-thumb--circle {
+    border-radius: 50%;
+}
+
+.img-preview {
+    max-width: 5rem;
+    height: auto;
+    border-radius: 0.375rem;
+}
+
+/* ——— Welcome banner ——— */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    border-radius: 1rem;
+    padding: clamp(1rem, 4vw, 2rem);
+}
+
+.welcome-banner h4 {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+/* ——— Filter forms ——— */
+.filter-form .btn {
+    width: 100%;
+}
+
+.filter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ——— Schedule day blocks ——— */
+.day-block-header {
+    gap: 0.5rem;
+}
+
+.day-block-header .btn {
+    flex-shrink: 0;
+}
+
+/* ——— Pagination ——— */
+.pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+/* ——— Auth layout ——— */
+.auth-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 26.25rem;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 2rem rgba(45, 143, 174, 0.15);
+}
+
+.auth-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border-radius: 1rem 1rem 0 0;
+    text-align: center;
+}
+
+.auth-header h4 {
+    font-size: clamp(1.1rem, 3vw, 1.25rem);
+}
+
+/* ——— Tablet+ ——— */
+@media (min-width: 576px) {
+    :root {
+        --content-padding: 1.25rem;
+    }
+
+    .filter-form .btn {
+        width: auto;
+    }
+
+    .filter-actions {
+        flex-direction: row;
+    }
+
+    .topbar-user {
+        max-width: 12rem;
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --content-padding: 1.5rem;
+    }
+}
+
+/* ——— Desktop sidebar ——— */
+@media (min-width: 992px) {
+    .app-sidebar {
+        display: flex;
+    }
+
+    .main-content {
+        margin-right: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+    }
+
+    .topbar-user {
+        max-width: none;
+    }
+}
+
+/* ——— Large screens ——— */
+@media (min-width: 1400px) {
+    .content-area {
+        max-width: 87.5rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* ——— Ultra wide ——— */
+@media (min-width: 1920px) {
+    :root {
+        --sidebar-width: 17.5rem;
+    }
+
+    .content-area {
+        max-width: 100rem;
+    }
+}
+
+/* ——— Reduced motion ——— */
+@media (prefers-reduced-motion: reduce) {
+    .stat-card {
+        transition: none;
+    }
+}
