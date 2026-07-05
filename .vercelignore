@@ -8,4 +8,7 @@ storage/framework/sessions/*
 storage/framework/views/*
 tests
 .phpunit.result.cache
-flutter_app
+
+# Flutter patient app — local only, never deploy to Vercel
+/flutter_app
+/flutter_app/**
