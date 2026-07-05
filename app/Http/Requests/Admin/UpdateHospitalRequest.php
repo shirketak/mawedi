@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\LibyaGovernorate;
+use App\Enums\SubscriptionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,6 +28,15 @@ class UpdateHospitalRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', Rule::unique('hospitals', 'email')->ignore($hospital->id)],
             'website' => ['nullable', 'url', 'max:255'],
             'address' => ['required', 'string', 'max:1000'],
+            'subscription_type' => ['required', Rule::enum(SubscriptionType::class)],
+            'monthly_price' => [
+                Rule::requiredIf(fn () => $this->input('subscription_type') === SubscriptionType::Monthly->value),
+                'nullable', 'numeric', 'min:0', 'max:999999.99',
+            ],
+            'usage_fee_per_booking' => [
+                Rule::requiredIf(fn () => $this->input('subscription_type') === SubscriptionType::UsageBased->value),
+                'nullable', 'numeric', 'min:0', 'max:9999.99',
+            ],
         ];
     }
 

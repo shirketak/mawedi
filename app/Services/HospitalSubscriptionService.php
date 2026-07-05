@@ -19,16 +19,22 @@ class HospitalSubscriptionService
         private readonly HospitalWalletService $walletService,
     ) {}
 
-    public function initializeForNewHospital(Hospital $hospital): Hospital
+    public function initializeForNewHospital(Hospital $hospital, array $overrides = []): Hospital
     {
         $trialDays = (int) $this->settings->get('default_free_trial_days', 14);
-        $defaultType = SubscriptionType::Monthly;
-        $monthlyPrice = (float) $this->settings->get('default_monthly_price', 100);
-        $usageFee = (float) $this->settings->get('default_usage_fee_per_booking', 5);
+        $type = isset($overrides['subscription_type'])
+            ? ($overrides['subscription_type'] instanceof SubscriptionType
+                ? $overrides['subscription_type']
+                : SubscriptionType::from($overrides['subscription_type']))
+            : SubscriptionType::Monthly;
+        $monthlyPrice = (float) ($overrides['monthly_price'] ?? $this->settings->get('default_monthly_price', 100));
+        $usageFee = (float) ($overrides['usage_fee_per_booking'] ?? $this->settings->get('default_usage_fee_per_booking', 5));
 
         $hospital->update([
-            'subscription_type' => $defaultType,
-            'subscription_status' => SubscriptionStatus::Trial,
+            'subscription_type' => $type,
+            'subscription_status' => $type === SubscriptionType::UsageBased
+                ? SubscriptionStatus::Active
+                : SubscriptionStatus::Trial,
             'monthly_price' => $monthlyPrice,
             'usage_fee_per_booking' => $usageFee,
             'free_trial_days' => $trialDays,

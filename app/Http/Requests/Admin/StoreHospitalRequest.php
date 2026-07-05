@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\LibyaGovernorate;
+use App\Enums\SubscriptionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -28,6 +29,15 @@ class StoreHospitalRequest extends FormRequest
             'address' => ['required', 'string', 'max:1000'],
             'user_email' => ['required', 'email', 'max:255', 'unique:hospital_users,email'],
             'user_password' => ['required', 'confirmed', Password::defaults()],
+            'subscription_type' => ['required', Rule::enum(SubscriptionType::class)],
+            'monthly_price' => [
+                Rule::requiredIf(fn () => $this->input('subscription_type') === SubscriptionType::Monthly->value),
+                'nullable', 'numeric', 'min:0', 'max:999999.99',
+            ],
+            'usage_fee_per_booking' => [
+                Rule::requiredIf(fn () => $this->input('subscription_type') === SubscriptionType::UsageBased->value),
+                'nullable', 'numeric', 'min:0', 'max:9999.99',
+            ],
         ];
     }
 
@@ -45,6 +55,9 @@ class StoreHospitalRequest extends FormRequest
             'address' => 'العنوان',
             'user_email' => 'بريد حساب المستشفى',
             'user_password' => 'كلمة مرور حساب المستشفى',
+            'subscription_type' => 'نوع الاشتراك',
+            'monthly_price' => 'سعر الاشتراك الشهري',
+            'usage_fee_per_booking' => 'رسوم الحجز',
         ];
     }
 }

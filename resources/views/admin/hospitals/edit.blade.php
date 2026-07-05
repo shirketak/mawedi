@@ -51,6 +51,8 @@
                     <label class="form-label">العنوان *</label>
                     <input type="text" name="address" class="form-control" value="{{ old('address', $hospital->address) }}" required>
                 </div>
+
+                @include('partials.hospital-subscription-fields', ['hospital' => $hospital])
             </div>
             <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">تحديث</button>

@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\StoreHospitalRequest;
 use App\Http\Requests\Admin\UpdateHospitalRequest;
 use App\Models\Hospital;
 use App\Services\HospitalService;
+use App\Services\SystemSettingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -19,6 +20,7 @@ class HospitalController extends Controller
 {
     public function __construct(
         private readonly HospitalService $hospitalService,
+        private readonly SystemSettingService $settings,
     ) {}
 
     public function index(Request $request): View
@@ -45,8 +47,16 @@ class HospitalController extends Controller
     {
         $this->authorize('create', Hospital::class);
         $governorates = LibyaGovernorate::options();
+        $subscriptionTypes = SubscriptionType::options();
+        $defaultMonthlyPrice = $this->settings->get('default_monthly_price', 100);
+        $defaultUsageFee = $this->settings->get('default_usage_fee_per_booking', 5);
 
-        return view('admin.hospitals.create', compact('governorates'));
+        return view('admin.hospitals.create', compact(
+            'governorates',
+            'subscriptionTypes',
+            'defaultMonthlyPrice',
+            'defaultUsageFee',
+        ));
     }
 
     public function store(StoreHospitalRequest $request): RedirectResponse
@@ -73,8 +83,17 @@ class HospitalController extends Controller
     {
         $this->authorize('update', $hospital);
         $governorates = LibyaGovernorate::options();
+        $subscriptionTypes = SubscriptionType::options();
+        $defaultMonthlyPrice = $this->settings->get('default_monthly_price', 100);
+        $defaultUsageFee = $this->settings->get('default_usage_fee_per_booking', 5);
 
-        return view('admin.hospitals.edit', compact('hospital', 'governorates'));
+        return view('admin.hospitals.edit', compact(
+            'hospital',
+            'governorates',
+            'subscriptionTypes',
+            'defaultMonthlyPrice',
+            'defaultUsageFee',
+        ));
     }
 
     public function update(UpdateHospitalRequest $request, Hospital $hospital): RedirectResponse

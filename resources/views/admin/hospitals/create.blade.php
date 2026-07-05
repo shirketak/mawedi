@@ -63,6 +63,8 @@
                     <label class="form-label">تأكيد كلمة المرور *</label>
                     <input type="password" name="user_password_confirmation" class="form-control" required>
                 </div>
+
+                @include('partials.hospital-subscription-fields')
             </div>
             <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">حفظ</button>

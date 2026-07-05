@@ -116,6 +116,11 @@
                                 {{ $hospital->subscriptionStatusLabel() }}
                             </span>
                             <small class="d-block text-muted">{{ $hospital->subscriptionTypeLabel() }}</small>
+                            @if($hospital->subscription_type?->value === 'monthly' && $hospital->monthly_price !== null)
+                                <small class="d-block">{{ number_format($hospital->monthly_price, 2) }} د.ل/شهر</small>
+                            @elseif($hospital->subscription_type?->value === 'usage_based' && $hospital->usage_fee_per_booking !== null)
+                                <small class="d-block">{{ number_format($hospital->usage_fee_per_booking, 2) }} د.ل/حجز</small>
+                            @endif
                         @else
                             <span class="text-muted">—</span>
                         @endif

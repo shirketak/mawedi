@@ -31,6 +31,7 @@ class HospitalService
     public function create(array $data, array $userData): Hospital
     {
         return DB::transaction(function () use ($data, $userData) {
+            $subscriptionData = $this->extractSubscriptionData($data);
             $data['is_active'] = $data['is_active'] ?? true;
             $hospital = $this->hospitalRepository->create($data);
 
@@ -42,9 +43,9 @@ class HospitalService
                 'is_active' => true,
             ]);
 
-            $this->subscriptionService->initializeForNewHospital($hospital);
+            $this->subscriptionService->initializeForNewHospital($hospital, $subscriptionData);
 
-            $this->auditLogService->log(AuditAction::Created, $hospital, null, $hospital->toArray());
+            $this->auditLogService->log(AuditAction::Created, $hospital, null, $hospital->fresh()->toArray());
 
             return $hospital->load(['primaryUser', 'wallet']);
         });
@@ -53,13 +54,37 @@ class HospitalService
     public function update(Hospital $hospital, array $data): Hospital
     {
         return DB::transaction(function () use ($hospital, $data) {
+            $subscriptionData = $this->extractSubscriptionData($data);
             $old = $hospital->toArray();
             $hospital = $this->hospitalRepository->update($hospital, $data);
 
-            $this->auditLogService->log(AuditAction::Updated, $hospital, $old, $hospital->fresh()->toArray());
+            if ($subscriptionData !== []) {
+                $this->subscriptionService->updateSubscription($hospital, $subscriptionData);
+                $hospital = $hospital->fresh();
+            }
+
+            $this->auditLogService->log(AuditAction::Updated, $hospital, $old, $hospital->toArray());
 
             return $hospital;
         });
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function extractSubscriptionData(array &$data): array
+    {
+        $keys = ['subscription_type', 'monthly_price', 'usage_fee_per_booking'];
+        $subscriptionData = [];
+
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data)) {
+                $subscriptionData[$key] = $data[$key];
+                unset($data[$key]);
+            }
+        }
+
+        return $subscriptionData;
     }
 
     public function delete(Hospital $hospital): bool
