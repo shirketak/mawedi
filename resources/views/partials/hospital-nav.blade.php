@@ -14,6 +14,9 @@
     <a href="{{ route('hospital.bookings.index') }}" class="nav-link {{ request()->routeIs('hospital.bookings.*') ? 'active' : '' }}">
         <i class="bi bi-calendar-check"></i> الحجوزات
     </a>
+    <a href="{{ route('hospital.account.index') }}" class="nav-link {{ request()->routeIs('hospital.account.*') ? 'active' : '' }}">
+        <i class="bi bi-wallet2"></i> المحفظة والاشتراك
+    </a>
     <a href="{{ route('hospital.reschedule-logs.index') }}" class="nav-link {{ request()->routeIs('hospital.reschedule-logs.*') ? 'active' : '' }}">
         <i class="bi bi-clock-history"></i> سجل التأجيل
     </a>

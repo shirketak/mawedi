@@ -167,6 +167,15 @@ img {
     color: #fff;
 }
 
+.report-link-card {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.report-link-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
 .app-sidebar .nav-link i {
     margin-left: 0.5rem;
     font-size: 1.1rem;

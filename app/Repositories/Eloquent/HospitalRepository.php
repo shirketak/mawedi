@@ -15,7 +15,9 @@ class HospitalRepository extends BaseRepository implements HospitalRepositoryInt
 
     public function paginateWithFilters(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->newQuery()->with('primaryUser');
+        $query = $this->model->newQuery()
+            ->with(['primaryUser', 'wallet'])
+            ->withCount(['doctors', 'specialties', 'bookings']);
 
         if (! empty($filters['search'])) {
             $search = $filters['search'];
@@ -34,7 +36,28 @@ class HospitalRepository extends BaseRepository implements HospitalRepositoryInt
             $query->where('is_active', (bool) $filters['is_active']);
         }
 
-        return $query->latest()->paginate($perPage)->withQueryString();
+        if (! empty($filters['subscription_type'])) {
+            $query->where('subscription_type', $filters['subscription_type']);
+        }
+
+        if (! empty($filters['subscription_status'])) {
+            $query->where('subscription_status', $filters['subscription_status']);
+        }
+
+        $sort = $filters['sort'] ?? 'created_at';
+        $direction = $filters['direction'] ?? 'desc';
+        $allowedSorts = [
+            'name', 'created_at', 'subscription_ends_at',
+            'doctors_count', 'bookings_count', 'specialties_count',
+        ];
+
+        if (in_array($sort, $allowedSorts, true)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function toggleStatus(Hospital $hospital): Hospital

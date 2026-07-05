@@ -3,6 +3,13 @@
 @section('page-title', 'الحجوزات')
 
 @section('content')
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 mb-3">
+    <div></div>
+    <a href="{{ route('hospital.bookings.create') }}" class="btn btn-success btn-sm">
+        <i class="bi bi-plus-circle"></i> حجز جديد
+    </a>
+</div>
+
 <div class="card mb-3 mb-md-4">
     <div class="card-body">
         <form method="GET" class="row g-3 filter-form">
@@ -56,7 +63,7 @@
                 <tr>
                     <th>المريض</th><th class="d-none d-md-table-cell">الهاتف</th><th>الطبيب</th>
                     <th class="d-none d-lg-table-cell">التخصص</th><th>التاريخ</th><th>الوقت</th>
-                    <th>الحالة</th><th class="d-none d-sm-table-cell">الدفع</th>
+                    <th>الحالة</th><th class="d-none d-sm-table-cell">الدفع</th><th>إجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -70,9 +77,60 @@
                     <td>{{ substr($booking->booking_time, 0, 5) }}</td>
                     <td><span class="badge {{ $booking->status->badgeClass() }}">{{ $booking->status->label() }}</span></td>
                     <td class="d-none d-sm-table-cell"><span class="badge {{ $booking->payment_status->badgeClass() }}">{{ $booking->payment_status->label() }}</span></td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                إجراء
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @if($booking->status === \App\Enums\BookingStatus::Pending)
+                                    <li>
+                                        <form method="POST" action="{{ route('hospital.bookings.confirm', $booking) }}" class="d-inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="dropdown-item text-primary">تأكيد</button>
+                                        </form>
+                                    </li>
+                                @endif
+                                @if($booking->status === \App\Enums\BookingStatus::Confirmed)
+                                    <li>
+                                        <form method="POST" action="{{ route('hospital.bookings.complete', $booking) }}" class="d-inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="dropdown-item text-success">إكمال</button>
+                                        </form>
+                                    </li>
+                                @endif
+                                @if(in_array($booking->status, [\App\Enums\BookingStatus::Pending, \App\Enums\BookingStatus::Confirmed], true))
+                                    <li>
+                                        <form method="POST" action="{{ route('hospital.bookings.no-show', $booking) }}" class="d-inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="dropdown-item">لم يحضر</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="{{ route('hospital.bookings.cancel', $booking) }}" class="d-inline" onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الحجز؟')">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="dropdown-item text-danger">إلغاء</button>
+                                        </form>
+                                    </li>
+                                @endif
+                                @if($booking->payment_status === \App\Enums\PaymentStatus::Unpaid && !in_array($booking->status, [\App\Enums\BookingStatus::Cancelled], true))
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('hospital.bookings.mark-paid', $booking) }}" class="d-inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="dropdown-item">تسجيل الدفع</button>
+                                        </form>
+                                    </li>
+                                @endif
+                                @if(!in_array($booking->status, [\App\Enums\BookingStatus::Pending, \App\Enums\BookingStatus::Confirmed], true) && $booking->payment_status !== \App\Enums\PaymentStatus::Unpaid)
+                                    <li><span class="dropdown-item text-muted disabled">لا إجراءات</span></li>
+                                @endif
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="text-center text-muted py-4">لا توجد حجوزات</td></tr>
+                <tr><td colspan="9" class="text-center text-muted py-4">لا توجد حجوزات</td></tr>
                 @endforelse
             </tbody>
         </table>

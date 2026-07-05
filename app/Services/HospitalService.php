@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Hospital;
 use App\Models\HospitalUser;
 use App\Repositories\Contracts\HospitalRepositoryInterface;
@@ -13,6 +14,8 @@ class HospitalService
 {
     public function __construct(
         private readonly HospitalRepositoryInterface $hospitalRepository,
+        private readonly HospitalSubscriptionService $subscriptionService,
+        private readonly AuditLogService $auditLogService,
     ) {}
 
     public function list(array $filters, int $perPage = 15): LengthAwarePaginator
@@ -28,6 +31,7 @@ class HospitalService
     public function create(array $data, array $userData): Hospital
     {
         return DB::transaction(function () use ($data, $userData) {
+            $data['is_active'] = $data['is_active'] ?? true;
             $hospital = $this->hospitalRepository->create($data);
 
             HospitalUser::create([
@@ -38,22 +42,49 @@ class HospitalService
                 'is_active' => true,
             ]);
 
-            return $hospital->load('primaryUser');
+            $this->subscriptionService->initializeForNewHospital($hospital);
+
+            $this->auditLogService->log(AuditAction::Created, $hospital, null, $hospital->toArray());
+
+            return $hospital->load(['primaryUser', 'wallet']);
         });
     }
 
     public function update(Hospital $hospital, array $data): Hospital
     {
-        return $this->hospitalRepository->update($hospital, $data);
+        return DB::transaction(function () use ($hospital, $data) {
+            $old = $hospital->toArray();
+            $hospital = $this->hospitalRepository->update($hospital, $data);
+
+            $this->auditLogService->log(AuditAction::Updated, $hospital, $old, $hospital->fresh()->toArray());
+
+            return $hospital;
+        });
     }
 
     public function delete(Hospital $hospital): bool
     {
-        return DB::transaction(fn () => $this->hospitalRepository->delete($hospital));
+        return DB::transaction(function () use ($hospital) {
+            $this->auditLogService->log(AuditAction::Deleted, $hospital, $hospital->toArray());
+
+            return $this->hospitalRepository->delete($hospital);
+        });
     }
 
     public function toggleStatus(Hospital $hospital): Hospital
     {
-        return $this->hospitalRepository->toggleStatus($hospital);
+        return DB::transaction(function () use ($hospital) {
+            $wasActive = $hospital->is_active;
+            $hospital = $this->hospitalRepository->toggleStatus($hospital);
+
+            $this->auditLogService->log(
+                $hospital->is_active ? AuditAction::Activated : AuditAction::Deactivated,
+                $hospital,
+                ['is_active' => $wasActive],
+                ['is_active' => $hospital->is_active],
+            );
+
+            return $hospital;
+        });
     }
 }

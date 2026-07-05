@@ -34,6 +34,10 @@
                     <input type="number" name="consultation_duration_minutes" class="form-control" value="{{ old('consultation_duration_minutes', 20) }}" min="5" max="180" required>
                     <small class="text-muted">مثال: 15، 20، 30، 45 دقيقة</small>
                 </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label">سعر الكشف (د.ل)</label>
+                    <input type="number" name="consultation_price" class="form-control" value="{{ old('consultation_price', 0) }}" min="0" step="0.01">
+                </div>
             </div>
             <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                 <button type="submit" class="btn btn-success">حفظ</button>

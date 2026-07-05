@@ -31,6 +31,10 @@
                     <label class="form-label">مدة الكشف (بالدقائق) *</label>
                     <input type="number" name="consultation_duration_minutes" class="form-control" value="{{ old('consultation_duration_minutes', $doctor->consultation_duration_minutes) }}" min="5" max="180" required>
                 </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label">سعر الكشف (د.ل)</label>
+                    <input type="number" name="consultation_price" class="form-control" value="{{ old('consultation_price', $doctor->consultation_price) }}" min="0" step="0.01">
+                </div>
             </div>
             <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                 <button type="submit" class="btn btn-success">تحديث</button>

@@ -7,13 +7,19 @@ use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Doctor;
+use App\Services\HospitalWalletService;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private readonly HospitalWalletService $walletService,
+    ) {}
+
     public function index(): View
     {
-        $hospital = auth('hospital')->user()->hospital;
+        $hospital = auth('hospital')->user()->hospital->load('wallet');
+        $wallet = $this->walletService->ensureWallet($hospital);
 
         $stats = [
             'doctors' => $hospital->doctors()->count(),
@@ -41,6 +47,6 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('hospital.dashboard.index', compact('stats', 'upcomingBookings', 'recentDoctors', 'hospital'));
+        return view('hospital.dashboard.index', compact('stats', 'upcomingBookings', 'recentDoctors', 'hospital', 'wallet'));
     }
 }

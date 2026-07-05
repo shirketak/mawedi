@@ -65,6 +65,67 @@
     </div>
 </div>
 
+<div class="row g-3 g-md-4 mb-3 mb-md-4">
+    <div class="col-12 col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
+                <h6 class="mb-0"><i class="bi bi-wallet2"></i> المحفظة والاشتراك</h6>
+                <a href="{{ route('hospital.account.index') }}" class="btn btn-sm btn-outline-primary">التفاصيل</a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">رصيد المحفظة</div>
+                        <strong class="fs-5 text-success">{{ number_format($wallet->balance, 2) }} د.ل</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">نوع الاشتراك</div>
+                        <strong>{{ $hospital->subscriptionTypeLabel() }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">حالة الاشتراك</div>
+                        @if($hospital->subscription_status)
+                            <span class="badge {{ $hospital->subscription_status->badgeClass() }}">{{ $hospital->subscription_status->label() }}</span>
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">
+                            @if($hospital->trial_ends_at && $hospital->isOnTrial())
+                                نهاية التجربة
+                            @elseif($hospital->subscription_ends_at)
+                                نهاية الاشتراك
+                            @else
+                                —
+                            @endif
+                        </div>
+                        <strong>
+                            @if($hospital->trial_ends_at && $hospital->isOnTrial())
+                                {{ $hospital->trial_ends_at->format('Y-m-d') }}
+                            @elseif($hospital->subscription_ends_at)
+                                {{ $hospital->subscription_ends_at->format('Y-m-d') }}
+                            @else
+                                —
+                            @endif
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="card h-100 border-success">
+            <div class="card-body d-flex flex-column justify-content-center text-center">
+                <i class="bi bi-calendar-plus fs-1 text-success mb-2"></i>
+                <h6>حجز موعد جديد</h6>
+                <p class="text-muted small mb-3">أنشئ حجزاً يدوياً وادِر حالاته من قائمة الحجوزات</p>
+                <a href="{{ route('hospital.bookings.create') }}" class="btn btn-success btn-sm">إنشاء حجز</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-3 g-md-4">
     <div class="col-12 col-lg-7">
         <div class="card h-100">

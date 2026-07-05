@@ -26,6 +26,7 @@ class StoreDoctorRequest extends FormRequest
                     ->where('hospital_id', $hospital->id),
             ],
             'consultation_duration_minutes' => ['required', 'integer', 'min:5', 'max:180'],
+            'consultation_price' => ['required', 'numeric', 'min:0', 'max:999999.99'],
         ];
     }
 
@@ -36,6 +37,7 @@ class StoreDoctorRequest extends FormRequest
             'photo' => 'الصورة الشخصية',
             'specialty_id' => 'التخصص',
             'consultation_duration_minutes' => 'مدة الكشف بالدقائق',
+            'consultation_price' => 'سعر الكشف',
         ];
     }
 }

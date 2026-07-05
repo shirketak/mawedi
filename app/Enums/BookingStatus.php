@@ -9,6 +9,7 @@ enum BookingStatus: string
     case Completed = 'completed';
     case Cancelled = 'cancelled';
     case Rescheduled = 'rescheduled';
+    case NoShow = 'no_show';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum BookingStatus: string
             self::Completed => 'مكتمل',
             self::Cancelled => 'ملغي',
             self::Rescheduled => 'تم إعادة الجدولة',
+            self::NoShow => 'لم يحضر',
         };
     }
 
@@ -29,6 +31,7 @@ enum BookingStatus: string
             self::Completed => 'bg-success',
             self::Cancelled => 'bg-danger',
             self::Rescheduled => 'bg-info text-dark',
+            self::NoShow => 'bg-secondary',
         };
     }
 }

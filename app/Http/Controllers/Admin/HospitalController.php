@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\LibyaGovernorate;
+use App\Enums\SubscriptionStatus;
+use App\Enums\SubscriptionType;
 use App\Helpers\FileUploader;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreHospitalRequest;
@@ -23,10 +25,20 @@ class HospitalController extends Controller
     {
         $this->authorize('viewAny', Hospital::class);
 
-        $hospitals = $this->hospitalService->list($request->only(['search', 'governorate', 'is_active']));
+        $hospitals = $this->hospitalService->list($request->only([
+            'search', 'governorate', 'is_active',
+            'subscription_type', 'subscription_status', 'sort', 'direction',
+        ]));
         $governorates = LibyaGovernorate::options();
+        $subscriptionTypes = SubscriptionType::options();
+        $subscriptionStatuses = SubscriptionStatus::options();
 
-        return view('admin.hospitals.index', compact('hospitals', 'governorates'));
+        return view('admin.hospitals.index', compact(
+            'hospitals',
+            'governorates',
+            'subscriptionTypes',
+            'subscriptionStatuses',
+        ));
     }
 
     public function create(): View

@@ -21,6 +21,16 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'بيانات الدخول غير صحيحة.'])->onlyInput('email');
         }
 
+        $admin = auth('admin')->user();
+
+        if (! $admin->is_active) {
+            auth('admin')->logout();
+
+            return back()->withErrors(['email' => 'تم إيقاف حسابك. تواصل مع مدير النظام.'])->onlyInput('email');
+        }
+
+        $admin->update(['last_login_at' => now()]);
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('admin.dashboard'));

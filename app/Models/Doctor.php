@@ -19,6 +19,7 @@ class Doctor extends Model
         'name',
         'photo',
         'consultation_duration_minutes',
+        'consultation_price',
         'is_active',
     ];
 
@@ -27,6 +28,7 @@ class Doctor extends Model
         return [
             'is_active' => 'boolean',
             'consultation_duration_minutes' => 'integer',
+            'consultation_price' => 'decimal:2',
         ];
     }
 
@@ -58,5 +60,10 @@ class Doctor extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function priceLogs(): HasMany
+    {
+        return $this->hasMany(DoctorPriceLog::class);
     }
 }

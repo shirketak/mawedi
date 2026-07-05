@@ -14,6 +14,7 @@ class DoctorService
     public function __construct(
         private readonly DoctorRepositoryInterface $doctorRepository,
         private readonly DoctorSlotService $slotService,
+        private readonly DoctorPriceService $priceService,
     ) {}
 
     public function listForHospital(Hospital $hospital, array $filters, int $perPage = 15): LengthAwarePaginator
@@ -35,9 +36,18 @@ class DoctorService
                 $data['photo'] = FileUploader::upload($photo, 'doctors/photos');
             }
 
+            $price = $data['consultation_price'] ?? 0;
+            unset($data['consultation_price']);
+
             $data['hospital_id'] = $hospital->id;
 
-            return $this->doctorRepository->create($data);
+            $doctor = $this->doctorRepository->create($data);
+
+            if ($price > 0) {
+                $this->priceService->updatePrice($doctor, (float) $price, auth('hospital')->user());
+            }
+
+            return $doctor->fresh();
         });
     }
 
@@ -56,7 +66,15 @@ class DoctorService
             $durationChanged = isset($data['consultation_duration_minutes'])
                 && (int) $data['consultation_duration_minutes'] !== $doctor->consultation_duration_minutes;
 
+            $price = $data['consultation_price'] ?? null;
+            unset($data['consultation_price']);
+
             $doctor = $this->doctorRepository->update($doctor, $data);
+
+            if ($price !== null) {
+                $this->priceService->updatePrice($doctor, (float) $price, auth('hospital')->user());
+                $doctor = $doctor->fresh();
+            }
 
             if ($durationChanged) {
                 $this->slotService->regenerateSlotsForDoctor($doctor);

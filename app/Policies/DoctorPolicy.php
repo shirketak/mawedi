@@ -2,38 +2,38 @@
 
 namespace App\Policies;
 
+use App\Models\Admin;
 use App\Models\Doctor;
 use App\Models\HospitalUser;
 
 class DoctorPolicy
 {
-    public function viewAny(HospitalUser $user): bool
+    public function viewAny(Admin|HospitalUser $user): bool
     {
-        return true;
+        return $user instanceof HospitalUser || $user->hasPermission('doctors.price');
     }
 
-    public function view(HospitalUser $user, Doctor $doctor): bool
+    public function create(Admin|HospitalUser $user): bool
     {
-        return $user->hospital_id === $doctor->hospital_id;
+        return $user instanceof HospitalUser;
     }
 
-    public function create(HospitalUser $user): bool
+    public function update(Admin|HospitalUser $user, Doctor $doctor): bool
     {
-        return true;
+        return $user instanceof HospitalUser
+            ? $user->hospital_id === $doctor->hospital_id
+            : $user->hasPermission('doctors.price');
     }
 
-    public function update(HospitalUser $user, Doctor $doctor): bool
+    public function delete(Admin|HospitalUser $user, Doctor $doctor): bool
     {
-        return $user->hospital_id === $doctor->hospital_id;
+        return $user instanceof HospitalUser && $user->hospital_id === $doctor->hospital_id;
     }
 
-    public function delete(HospitalUser $user, Doctor $doctor): bool
+    public function updatePrice(Admin|HospitalUser $user, Doctor $doctor): bool
     {
-        return $user->hospital_id === $doctor->hospital_id;
-    }
-
-    public function manageSchedule(HospitalUser $user, Doctor $doctor): bool
-    {
-        return $user->hospital_id === $doctor->hospital_id;
+        return $user instanceof HospitalUser
+            ? $user->hospital_id === $doctor->hospital_id
+            : $user->hasPermission('doctors.price');
     }
 }

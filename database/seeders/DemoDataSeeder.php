@@ -14,8 +14,11 @@ use App\Models\DoctorWorkingDay;
 use App\Models\DoctorWorkingPeriod;
 use App\Models\Hospital;
 use App\Models\HospitalUser;
+use App\Models\Patient;
 use App\Models\Specialty;
 use App\Services\DoctorSlotService;
+use App\Services\HospitalSubscriptionService;
+use App\Services\HospitalWalletService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -34,6 +37,11 @@ class DemoDataSeeder extends Seeder
                 'is_active' => true,
             ]
         );
+
+        if (! $hospital->wallet) {
+            app(HospitalSubscriptionService::class)->initializeForNewHospital($hospital);
+            app(HospitalWalletService::class)->deposit($hospital, 500, 'رصيد افتتاحي تجريبي');
+        }
 
         HospitalUser::query()->firstOrCreate(
             ['email' => 'hospital_test@mawedi.com'],
@@ -55,6 +63,7 @@ class DemoDataSeeder extends Seeder
             [
                 'specialty_id' => $specialty?->id ?? Specialty::first()->id,
                 'consultation_duration_minutes' => 20,
+                'consultation_price' => 50,
                 'is_active' => true,
             ]
         );
@@ -78,6 +87,8 @@ class DemoDataSeeder extends Seeder
             app(DoctorSlotService::class)->regenerateSlotsForDoctor($doctor);
         }
 
+        $patient = Patient::query()->where('phone', '0911111111')->first();
+
         $slot = DoctorSlot::query()
             ->where('doctor_id', $doctor->id)
             ->where('status', SlotStatus::Available)
@@ -91,12 +102,14 @@ class DemoDataSeeder extends Seeder
                 'doctor_id' => $doctor->id,
                 'specialty_id' => $doctor->specialty_id,
                 'doctor_slot_id' => $slot->id,
-                'patient_name' => 'محمد علي',
-                'patient_phone' => '0920000000',
+                'patient_id' => $patient?->id,
+                'patient_name' => $patient?->name ?? 'محمد علي',
+                'patient_phone' => $patient?->phone ?? '0911111111',
                 'booking_date' => $slot->date,
                 'booking_time' => $slot->start_time,
                 'status' => BookingStatus::Confirmed,
                 'payment_status' => PaymentStatus::Unpaid,
+                'consultation_price' => $doctor->consultation_price,
             ]);
             $slot->update(['status' => SlotStatus::Booked]);
         }

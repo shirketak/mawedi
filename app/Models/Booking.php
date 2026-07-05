@@ -18,12 +18,14 @@ class Booking extends Model
         'doctor_id',
         'specialty_id',
         'doctor_slot_id',
+        'patient_id',
         'patient_name',
         'patient_phone',
         'booking_date',
         'booking_time',
         'status',
         'payment_status',
+        'consultation_price',
     ];
 
     protected function casts(): array
@@ -32,6 +34,7 @@ class Booking extends Model
             'booking_date' => 'date',
             'status' => BookingStatus::class,
             'payment_status' => PaymentStatus::class,
+            'consultation_price' => 'decimal:2',
         ];
     }
 
@@ -53,5 +56,10 @@ class Booking extends Model
     public function slot(): BelongsTo
     {
         return $this->belongsTo(DoctorSlot::class, 'doctor_slot_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
     }
 }

@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'admin.permission' => \App\Http\Middleware\EnsureAdminPermission::class,
             'hospital.auth' => EnsureHospitalUser::class,
         ]);
     })

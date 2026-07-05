@@ -16,16 +16,16 @@ class SpecialtyPolicy
 
     public function create(Admin $admin): bool
     {
-        return true;
+        return $admin->hasPermission('specialties');
     }
 
     public function update(Admin $admin, Specialty $specialty): bool
     {
-        return true;
+        return $admin->hasPermission('specialties');
     }
 
     public function delete(Admin $admin, Specialty $specialty): bool
     {
-        return true;
+        return $admin->hasPermission('specialties');
     }
 }
